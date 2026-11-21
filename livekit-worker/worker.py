@@ -1,4 +1,4 @@
-
+﻿
 """
 SUNRISE SALON - AI VOICE RECEPTIONIST
 
@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 
 from livekit import agents
 from livekit.agents import Agent, AgentSession, RunContext, function_tool
-from livekit.plugins import groq, silero
+from livekit.plugins import groq, silero, elevenlabs
 
 
 # =====================================================
@@ -57,6 +57,7 @@ REQUIRED_KEYS = [
     "LIVEKIT_API_KEY",
     "LIVEKIT_API_SECRET",
     "GROQ_API_KEY",
+    "ELEVEN_API_KEY",
 ]
 
 missing = [key for key in REQUIRED_KEYS if not os.getenv(key)]
@@ -627,12 +628,11 @@ async def entrypoint(ctx: agents.JobContext):
         logger.info("GROQ LLM READY")
 
         # Voice generation
-        tts = groq.TTS(
-            model=TTS_MODEL,
-            voice=TTS_VOICE
+        tts = elevenlabs.TTS(
+            model="eleven_turbo_v2_5"
         )
 
-        logger.info("ORPHEUS TTS READY")
+        logger.info("ELEVENLABS TTS READY")
 
         # Voice activity detection
         vad = silero.VAD.load()
@@ -695,3 +695,12 @@ if __name__ == "__main__":
             agent_name="sunrise-salon-agent"
         )
     )
+
+
+
+
+
+
+
+
+
