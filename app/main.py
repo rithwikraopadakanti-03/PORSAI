@@ -117,9 +117,50 @@ def cancel(booking_id: int, payload: CancelRequest, db: Session = Depends(get_db
 
 @app.post("/api/livekit/token")
 def livekit_token():
-    if not all(os.getenv(k) for k in ("LIVEKIT_API_KEY", "LIVEKIT_API_SECRET")):
-        raise HTTPException(503, "LiveKit credentials are not configured.")
-    token = livekit_api.AccessToken(os.environ["LIVEKIT_API_KEY"], os.environ["LIVEKIT_API_SECRET"])
-    token.with_identity("web-caller").with_name("Sunrise Salon caller").with_grants(
-        livekit_api.VideoGrants(room_join=True, room=os.getenv("LIVEKIT_ROOM", "sunrise-salon")))
-    return {"token": token.to_jwt(), "url": os.getenv("LIVEKIT_URL")}
+
+    if not all(
+        os.getenv(k)
+        for k in (
+            "LIVEKIT_API_KEY",
+            "LIVEKIT_API_SECRET",
+            "LIVEKIT_URL"
+        )
+    ):
+        raise HTTPException(
+            503,
+            "LiveKit credentials are not configured."
+        )
+
+    token = livekit_api.AccessToken(
+        os.environ["LIVEKIT_API_KEY"],
+        os.environ["LIVEKIT_API_SECRET"]
+    )
+
+    room_name = os.getenv(
+        "LIVEKIT_ROOM",
+        "sunrise-salon"
+    )
+
+    token.with_identity(
+        "web-caller"
+    ).with_name(
+        "Sunrise Salon caller"
+    ).with_grants(
+        livekit_api.VideoGrants(
+            room_join=True,
+            room=room_name
+        )
+    ).with_room_config(
+        livekit_api.RoomConfiguration(
+            agents=[
+                livekit_api.RoomAgentDispatch(
+                    agent_name="sunrise-salon-agent"
+                )
+            ]
+        )
+    )
+
+    return {
+        "token": token.to_jwt(),
+        "url": os.environ["LIVEKIT_URL"]
+    }
