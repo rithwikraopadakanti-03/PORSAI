@@ -1,0 +1,21 @@
+{
+  "name": "sunrise-salon-call",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@livekit/components-react": "^2.9.5",
+    "@livekit/components-styles": "^1.2.0",
+    "livekit-client": "^2.9.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5"
+  }
+}
