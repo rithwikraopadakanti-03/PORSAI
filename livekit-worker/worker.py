@@ -113,58 +113,45 @@ async def api_post(path, payload):
 
 
 def find_service(services, requested_name):
+    query = re.sub(r"[^a-z0-9 ]", "", requested_name.lower())
+    words = set(query.split())
 
-    query = re.sub(
-        r"[^a-z0-9 ]",
-        "",
-        requested_name.lower()
-    )
+    men_words = {"men", "man", "male", "mens"}
+    women_words = {"women", "woman", "female", "womens"}
 
-    # Men's haircut
-    if "men" in query or "male" in query:
-
+    # Match men's haircut using complete words
+    if words & men_words:
         for service in services:
-
-            name = service["name"].lower()
-
-            if "men" in name and "haircut" in name:
+            name_words = set(re.sub(
+                r"[^a-z0-9 ]", "", service["name"].lower()
+            ).split())
+            if name_words & men_words and "haircut" in name_words:
                 return service
+        return None
 
-    # Women's haircut
-    if "women" in query or "female" in query:
-
+    # Match women's haircut using complete words
+    if words & women_words:
         for service in services:
-
-            name = service["name"].lower()
-
-            if "women" in name and "haircut" in name:
+            name_words = set(re.sub(
+                r"[^a-z0-9 ]", "", service["name"].lower()
+            ).split())
+            if name_words & women_words and "haircut" in name_words:
                 return service
+        return None
 
-    # Exact match
+    # Exact normalized match
     for service in services:
-
-        name = re.sub(
-            r"[^a-z0-9 ]",
-            "",
-            service["name"].lower()
-        )
-
+        name = re.sub(r"[^a-z0-9 ]", "", service["name"].lower())
         if name == query:
             return service
 
-    # Partial match
+    # Partial match for other services
     for service in services:
-
         name = service["name"].lower()
-
-        if query and (
-            query in name or name in query
-        ):
+        if query and (query in name or name in query):
             return service
 
     return None
-
-
 async def get_slot_information(
     service_name,
     appointment_date,
@@ -695,6 +682,7 @@ if __name__ == "__main__":
             agent_name="sunrise-salon-agent"
         )
     )
+
 
 
 
