@@ -10,6 +10,7 @@ from .database import Base, engine, get_db
 from .models import Stylist, Service, Booking
 from .schemas import BookingCreate, RescheduleRequest, CancelRequest
 from .seed import seed
+from uuid import uuid4
 
 TZ = ZoneInfo("Asia/Kolkata")
 app = FastAPI(title="Sunrise Salon Voice Agent API")
